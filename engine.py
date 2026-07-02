@@ -26,7 +26,7 @@ import json
 # ──────────────────────────────────────────────
 def _get_youtube_args() -> dict:
     yt_args = {
-        'player_client': ['web'],
+        'player_client': ['ios'],
     }
     
     # 1. Try to fetch from Remote PO Token Server (if configured)
@@ -67,9 +67,10 @@ def _extract_formats(info: dict) -> list[dict]:
         ext       = f.get('ext', '')
         height    = f.get('height')
         format_id = f.get('format_id')
-        url       = f.get('url')
+        # Accept direct URL or manifest URL (HLS/DASH)
+        url = f.get('url') or f.get('manifest_url')
 
-        if vcodec != 'none' and height and url:
+        if vcodec and vcodec != 'none' and height and url:
             res = f"{height}p"
             score = 0
             if 'avc' in vcodec: score += 10
@@ -96,22 +97,22 @@ def _get_best_video_with_audio(info: dict) -> str:
     for f in info.get('formats', []):
         vcodec = f.get('vcodec', 'none')
         acodec = f.get('acodec', 'none')
-        url = f.get('url')
+        url = f.get('url') or f.get('manifest_url')
         if vcodec != 'none' and acodec != 'none' and url:
             if not best_video or (f.get('height') or 0) > (best_video.get('height') or 0):
                 best_video = f
-    return best_video.get('url') if best_video else ''
+    return (best_video.get('url') or best_video.get('manifest_url')) if best_video else ''
 
 def _get_best_audio(info: dict) -> str:
     best_audio = None
     for f in info.get('formats', []):
         vcodec = f.get('vcodec', 'none')
         acodec = f.get('acodec', 'none')
-        url = f.get('url')
+        url = f.get('url') or f.get('manifest_url')
         if vcodec == 'none' and acodec != 'none' and url:
             if not best_audio or (f.get('abr') or 0) > (best_audio.get('abr') or 0):
                 best_audio = f
-    return best_audio.get('url') if best_audio else ''
+    return (best_audio.get('url') or best_audio.get('manifest_url')) if best_audio else ''
 
 # ──────────────────────────────────────────────
 #  Public API functions

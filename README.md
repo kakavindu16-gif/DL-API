@@ -1,96 +1,88 @@
-# Syntiox DL — REST API
+# Syntiox DL API - Documentation
 
-YouTube video & audio direct URL generator API built with **FastAPI** + **yt-dlp**.  
-This API retrieves raw stream URLs for YouTube videos/audio directly from YouTube without proxying the media files through the server. No local media storage or FFmpeg is required for downloads!
+Welcome to the Syntiox DL API! This API allows you to extract high-quality video and audio download links from YouTube.
 
----
+## Base URL
+Production Server: `https://dl-production-ac4e.up.railway.app`
 
-## 🚀 Quick Start
-
-1. Install requirements:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-2. Run the server:
-   ```bash
-   uvicorn app:app --host 0.0.0.0 --port 8000 --reload
-   ```
-
-Or just double-click **`run_api.bat`**
-
-Swagger UI → **http://localhost:8000/docs**
+## Authentication
+The API requires an `X-API-KEY` header for all requests to the `/info` endpoint.
+**API Key:** `cDlzdjlmODdoOWY4aGQ3Zjk4N2RmaGQ5cGdmaGQ5YWZkOThmNzg=`
 
 ---
 
-## 📡 Endpoints
+## 1. Get Video Information & Download Links
+**Endpoint:** `/info`
+**Method:** `POST`
 
-### Health
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/` | API health check |
-| `GET` | `/ffmpeg` | Check if ffmpeg is available (optional) |
+### JavaScript Example (Fetch)
+```javascript
+const apiUrl = "https://dl-production-ac4e.up.railway.app/info";
+const apiKey = "cDlzdjlmODdoOWY4aGQ3Zjk4N2RmaGQ5cGdmaGQ5YWZkOThmNzg=";
 
-### Info (Get Direct Stream URLs)
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/info` | Get video/playlist details + raw direct download links |
+async function getVideoInfo(youtubeUrl) {
+    try {
+        const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-API-KEY": apiKey
+            },
+            body: JSON.stringify({ url: youtubeUrl })
+        });
 
-**Request:**
-```json
-{ "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
-```
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("API Error:", errorData.detail);
+            return;
+        }
 
-**Response (video):**
-```json
-{
-  "type": "video",
-  "title": "Rick Astley - Never Gonna Give You Up",
-  "thumb": "https://...",
-  "duration": 212,
-  "uploader": "Rick Astley",
-  "best_video_download_url": "https://rr5---sn-...googlevideo.com/videoplayback?...",
-  "audio_download_url": "https://rr5---sn-...googlevideo.com/videoplayback?...",
-  "formats": [
-    { 
-      "id": "137", 
-      "res": "1080p", 
-      "ext": "mp4", 
-      "url": "https://rr5---sn-...googlevideo.com/videoplayback?...", 
-      "download_url": "https://rr5---sn-...googlevideo.com/videoplayback?..." 
+        const data = await response.json();
+        console.log("Success! Data received:", data);
+
+        // Accessing the download links
+        const videoTitle = data.title;
+        const bestVideoUrl = data.best_video_download_url; // Direct mp4 video link
+        const bestAudioUrl = data.audio_download_url;      // Direct mp3/m4a audio link
+
+        console.log("Title:", videoTitle);
+        console.log("Best Video URL:", bestVideoUrl);
+        console.log("Best Audio URL:", bestAudioUrl);
+
+    } catch (error) {
+        console.error("Network Error:", error);
     }
-  ]
 }
+
+// Test the function
+getVideoInfo("https://youtu.be/wc4p8DASvU4");
 ```
 
-**Response (playlist):**
+### Expected JSON Response
+When you make a successful request, the API will return a JSON object like this:
+
 ```json
 {
-  "type": "playlist",
-  "title": "My Playlist",
-  "count": 12,
-  "videos": [
-    { "title": "Song 1", "url": "https://..." }
-  ]
+    "type": "video",
+    "title": "Mandari - CHIRA BOY | Official Music Video",
+    "thumb": "https://i.ytimg.com/vi_webp/wc4p8DASvU4/maxresdefault.webp",
+    "duration": 234,
+    "uploader": "Chira Boy",
+    "formats": [
+        {
+            "id": "18",
+            "res": "360p",
+            "ext": "mp4",
+            "download_url": "https://dl-production-ac4e.up.railway.app/stream?token=eyJhb..."
+        }
+    ],
+    "best_video_download_url": "https://dl-production-ac4e.up.railway.app/stream?token=eyJhbGc...",
+    "audio_download_url": "https://dl-production-ac4e.up.railway.app/stream?token=eyJhbGciOiJIUz..."
 }
 ```
 
----
-
-## 🛠 Features
-
-- **No Server Storage:** Files are downloaded directly from YouTube's CDN to the user's browser/client.
-- **No FFmpeg Dependency:** Video and audio streams are directly accessed from YouTube CDN, removing the need for server-side audio conversion or format merging.
-- **Bypasses IP Locks:** Emulates Android & iOS player clients to bypass YouTube's strict IP locking mechanism.
-
----
-
-## 📁 Folder Structure
-
-```
-├── app.py            ← FastAPI routes
-├── engine.py         ← yt-dlp direct stream extractor
-├── requirements.txt  ← Python dependencies
-├── run_api.bat       ← One-click Windows start script
-└── README.md         ← This file
-```
+### Important Notes on the Links (Streaming Proxy)
+- The download URLs (`best_video_download_url`, `audio_download_url`, and the URLs inside the `formats` array) are **secure proxy links** routed through our server.
+- They are **Single-Use** tokens. Once a download is started, the link cannot be copied and reused by someone else.
+- The tokens automatically **expire after 20 minutes**.
+- When accessing the `audio_download_url`, the server automatically extracts the pure Audio stream using `ffmpeg` and serves it as an `audio.mp3` file!

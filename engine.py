@@ -124,8 +124,8 @@ def get_info(url: str) -> dict:
     """Fetch metadata for a single video, search query, or a playlist."""
     is_search = url.startswith('ytsearch')
 
-    # android_vr: bypasses bot-detection on datacenter IPs, avoids SABR, returns full DASH
-    yt_args = {'player_client': ['android_vr']}
+    # android_embedded bypasses bot-detection on datacenter IPs, avoids SABR, returns full DASH
+    yt_args = {'player_client': ['android_embedded', 'android_creator']}
 
     # Inject PO token / visitor_data if available from POT server or env vars
     extra = _get_youtube_args()

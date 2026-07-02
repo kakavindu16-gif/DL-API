@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import time
 import hashlib
+import subprocess
 from typing import Optional
 
 import httpx
@@ -68,10 +69,11 @@ class InfoRequest(BaseModel):
 # ─────────────────────────────────────────────
 #  JWT helpers
 # ─────────────────────────────────────────────
-def _make_stream_url(yt_url: str, base_url: str, ext: str = "mp4") -> str:
+def _make_stream_url(yt_url: str, base_url: str, ext: str = "mp4", audio_only: bool = False) -> str:
     """
     Wrap a raw YT URL inside a signed JWT and return a proxy URL.
     The jti (JWT ID) is a short hash used for single-use enforcement.
+    audio_only=True signals /stream to pipe through ffmpeg to extract audio.
     """
     jti = hashlib.sha256(f"{yt_url}{time.time()}".encode()).hexdigest()[:20]
     payload = {
@@ -80,6 +82,8 @@ def _make_stream_url(yt_url: str, base_url: str, ext: str = "mp4") -> str:
         "exp": time.time() + TOKEN_TTL_SECONDS,
         "jti": jti,
     }
+    if audio_only:
+        payload["audio_only"] = True
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
     return f"{base_url}stream?token={token}"
 
@@ -124,11 +128,16 @@ async def get_info(body: InfoRequest, request: Request):
             best_video, base, ext="mp4"
         )
 
-    # Wrap best_audio URL
+    # Wrap best_audio URL — if no separate audio stream, extract from video via ffmpeg
     best_audio = result.pop("best_audio", "")
     if best_audio:
         result["audio_download_url"] = _make_stream_url(
             best_audio, base, ext="m4a"
+        )
+    elif best_video and engine.check_ffmpeg():
+        # No separate audio stream — extract audio from the combined video stream
+        result["audio_download_url"] = _make_stream_url(
+            best_video, base, ext="mp3", audio_only=True
         )
 
     # Wrap per-format URLs — never expose raw YT URL
@@ -181,11 +190,49 @@ async def stream_video(token: str = Query(...)):
         raise HTTPException(status_code=403, detail="Malformed token payload")
 
     ext = payload.get("ext", "mp4").lower()
+    audio_only = payload.get("audio_only", False)
+
+    # ── 5. Stream via ffmpeg (audio extraction) or direct proxy ───────────
+    if audio_only and engine.check_ffmpeg():
+        # Extract audio from a combined video stream using ffmpeg
+        async def _ffmpeg_audio_streamer():
+            cmd = [
+                "ffmpeg", "-i", yt_url,
+                "-vn",                   # drop video
+                "-acodec", "libmp3lame", # encode to mp3
+                "-q:a", "2",             # high quality (VBR ~190 kbps)
+                "-f", "mp3",             # output format
+                "pipe:1",                # write to stdout
+            ]
+            proc = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+            )
+            try:
+                while True:
+                    chunk = proc.stdout.read(65_536)  # 64 KB
+                    if not chunk:
+                        break
+                    yield chunk
+            finally:
+                proc.stdout.close()
+                proc.wait()
+
+        return StreamingResponse(
+            _ffmpeg_audio_streamer(),
+            media_type="audio/mpeg",
+            headers={
+                "Content-Disposition": 'attachment; filename="audio.mp3"',
+                "Cache-Control": "no-store",
+            },
+        )
+
+    # ── 6. Direct async chunk-by-chunk proxy ──────────────────────────────
     AUDIO_EXTS = {"mp3", "m4a", "webm", "ogg", "opus", "aac"}
     media_type = f"audio/{ext}" if ext in AUDIO_EXTS else f"video/{ext}"
     filename   = f"download.{ext}"
 
-    # ── 5. Async chunk-by-chunk proxy ─────────────
     async def _streamer():
         headers = {
             "User-Agent": (

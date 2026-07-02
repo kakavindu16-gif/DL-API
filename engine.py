@@ -123,9 +123,21 @@ def check_ffmpeg() -> bool:
 def get_info(url: str) -> dict:
     """Fetch metadata for a single video, search query, or a playlist."""
     is_search = url.startswith('ytsearch')
+
+    # android_vr: bypasses bot-detection on datacenter IPs, avoids SABR, returns full DASH
+    yt_args = {'player_client': ['android_vr']}
+
+    # Inject PO token / visitor_data if available from POT server or env vars
+    extra = _get_youtube_args()
+    if 'po_token' in extra:
+        yt_args['po_token'] = extra['po_token']
+    if 'visitor_data' in extra:
+        yt_args['visitor_data'] = extra['visitor_data']
+
     opts = {
         **_COMMON_OPTS,
         'logger': _SilentLogger(),
+        'extractor_args': {'youtube': yt_args},
         'http_headers': {
             'User-Agent': (
                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
@@ -134,12 +146,6 @@ def get_info(url: str) -> dict:
             )
         }
     }
-
-    # Only inject PO token args if they are available (from POT server or env vars)
-    yt_args = _get_youtube_args()
-    # Only pass extractor_args if we actually have PO token data (avoid SABR trigger)
-    if 'po_token' in yt_args or 'visitor_data' in yt_args:
-        opts['extractor_args'] = {'youtube': yt_args}
     
     # ── Handle Cookies to Bypass Bot Detection ──
     cookie_path = None

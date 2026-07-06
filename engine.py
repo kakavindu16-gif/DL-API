@@ -2,9 +2,7 @@ import yt_dlp
 import os
 import shutil
 
-# ──────────────────────────────────────────────
 #  Silent logger (suppress yt-dlp console noise)
-# ──────────────────────────────────────────────
 class _SilentLogger:
     def debug(self, msg):   pass
     def warning(self, msg): pass
@@ -16,14 +14,15 @@ _COMMON_OPTS = {
     'nocheckcertificate': True,
     'source_address': '0.0.0.0',
     'simulate': True,
+    'format': 'all',
+    'js_runtimes': {'node': {}},
+    'impersonate': yt_dlp.networking.impersonate.ImpersonateTarget(client='chrome'),
 }
 
 import urllib.request
 import json
 
-# ──────────────────────────────────────────────
 #  Helper: Dynamic YouTube Extractor Args
-# ──────────────────────────────────────────────
 def _get_youtube_args() -> dict:
     yt_args = {
         # Let yt-dlp use its default client array for best format availability
@@ -57,67 +56,96 @@ def _get_youtube_args() -> dict:
         
     return yt_args
 
-
-# ──────────────────────────────────────────────
 #  Helper: extract & rank video formats
-# ──────────────────────────────────────────────
 def _extract_formats(info: dict) -> list[dict]:
     formats_dict: dict[str, dict] = {}
-    for f in info.get('formats', []):
-        vcodec    = f.get('vcodec', '')
+    
+    for f in info.get('formats') or []:
+        vcodec    = f.get('vcodec', 'none')
+        acodec    = f.get('acodec', 'none')
         ext       = f.get('ext', '')
-        height    = f.get('height')
+        url       = f.get('url') or f.get('manifest_url')
         format_id = f.get('format_id')
-        # Accept direct URL or manifest URL (HLS/DASH)
-        url = f.get('url') or f.get('manifest_url')
+        
+        if not url:
+            continue
 
-        if vcodec and vcodec != 'none' and height and url:
-            res = f"{height}p"
+        # 1. Video Formats
+        if vcodec != 'none' and f.get('height'):
+            res = f"{f.get('height')}p"
             score = 0
             if 'avc' in vcodec: score += 10
             if ext == 'mp4':    score += 5
 
-            if res not in formats_dict or score > formats_dict[res]['score']:
+            if res not in formats_dict or score > formats_dict.get(res, {}).get('score', -1):
                 formats_dict[res] = {
-                    'id':    format_id,
-                    'res':   res,
-                    'ext':   ext,
-                    'url':   url,
-                    'score': score,
+                    'id': format_id, 'res': res, 'ext': ext, 'url': url, 'score': score,
+                    'cookies': f.get('cookies') or info.get('cookies'),
+                    'http_headers': f.get('http_headers') or info.get('http_headers')
+                }
+                
+        # 2. Audio Formats
+        elif vcodec == 'none' and acodec != 'none' and f.get('abr'):
+            res = f"{int(f.get('abr'))}kbps"
+            score = 0
+            if ext == 'm4a': score += 5
+            
+            if res not in formats_dict or score > formats_dict.get(res, {}).get('score', -1):
+                formats_dict[res] = {
+                    'id': format_id, 'res': res, 'ext': ext, 'url': url, 'score': score,
+                    'cookies': f.get('cookies') or info.get('cookies'),
+                    'http_headers': f.get('http_headers') or info.get('http_headers')
                 }
 
-    sorted_formats = sorted(
-        formats_dict.values(),
-        key=lambda x: int(x['res'].replace('p', '')),
-        reverse=True,
-    )
-    return [{'id': f['id'], 'res': f['res'], 'ext': f['ext'], 'url': f['url']} for f in sorted_formats]
+    def sort_key(item):
+        res_str = item['res']
+        if res_str.endswith('p'):
 
-def _get_best_video_with_audio(info: dict) -> str:
+            return (1, int(res_str.replace('p', '')))
+        elif res_str.endswith('kbps'):
+
+            return (0, int(res_str.replace('kbps', '')))
+        return (-1, 0)
+
+    sorted_formats = sorted(formats_dict.values(), key=sort_key, reverse=True)
+    
+    return [{'id': f['id'], 'res': f['res'], 'ext': f['ext'], 'url': f['url'], 'cookies': f.get('cookies'), 'http_headers': f.get('http_headers')} for f in sorted_formats]
+
+def _get_best_video_with_audio(info: dict) -> dict:
     best_video = None
-    for f in info.get('formats', []):
+    for f in info.get('formats') or []:
         vcodec = f.get('vcodec', 'none')
         acodec = f.get('acodec', 'none')
         url = f.get('url') or f.get('manifest_url')
         if vcodec != 'none' and acodec != 'none' and url:
             if not best_video or (f.get('height') or 0) > (best_video.get('height') or 0):
                 best_video = f
-    return (best_video.get('url') or best_video.get('manifest_url')) if best_video else ''
+    if best_video:
+        return {
+            'url': best_video.get('url') or best_video.get('manifest_url', ''),
+            'cookies': best_video.get('cookies') or info.get('cookies'),
+            'http_headers': best_video.get('http_headers') or info.get('http_headers')
+        }
+    return {}
 
-def _get_best_audio(info: dict) -> str:
+def _get_best_audio(info: dict) -> dict:
     best_audio = None
-    for f in info.get('formats', []):
+    for f in info.get('formats') or []:
         vcodec = f.get('vcodec', 'none')
         acodec = f.get('acodec', 'none')
         url = f.get('url') or f.get('manifest_url')
         if vcodec == 'none' and acodec != 'none' and url:
             if not best_audio or (f.get('abr') or 0) > (best_audio.get('abr') or 0):
                 best_audio = f
-    return (best_audio.get('url') or best_audio.get('manifest_url')) if best_audio else ''
+    if best_audio:
+        return {
+            'url': best_audio.get('url') or best_audio.get('manifest_url', ''),
+            'cookies': best_audio.get('cookies') or info.get('cookies'),
+            'http_headers': best_audio.get('http_headers') or info.get('http_headers')
+        }
+    return {}
 
-# ──────────────────────────────────────────────
 #  Public API functions
-# ──────────────────────────────────────────────
 def check_ffmpeg() -> bool:
     """Return True if ffmpeg is available on this machine."""
     return shutil.which('ffmpeg') is not None or os.path.exists('ffmpeg.exe')
@@ -132,12 +160,19 @@ def get_info(url: str) -> dict:
         'extractor_args': {
             'youtube': _get_youtube_args()
         },
+
         'http_headers': {
+
             'User-Agent': (
                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                 'AppleWebKit/537.36 (KHTML, like Gecko) '
                 'Chrome/120.0.0.0 Safari/537.36'
-            )
+            ),
+
+            'Referer': 'https://google.com',
+    
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9',
         }
     }
     

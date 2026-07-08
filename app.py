@@ -4,9 +4,11 @@ import os
 import time
 import hashlib
 import subprocess
+import asyncio
 from typing import Optional
 
 import httpx
+from curl_cffi.requests import AsyncSession
 from cachetools import TTLCache
 from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -63,7 +65,7 @@ class InfoRequest(BaseModel):
     url: str
 
 #  JWT helpers
-def _make_stream_url(yt_url: str, base_url: str, ext: str = "mp4", audio_only: bool = False, cookies: str = None, headers: dict = None) -> str:
+def _make_stream_url(yt_url: str, base_url: str, ext: str = "mp4", audio_only: bool = False, cookies: str = None, headers: dict = None, original_url: str = None) -> str:
     """
     Wrap a raw YT URL inside a signed JWT and return a proxy URL.
     The jti (JWT ID) is a short hash used for single-use enforcement.
@@ -82,6 +84,8 @@ def _make_stream_url(yt_url: str, base_url: str, ext: str = "mp4", audio_only: b
         payload["cookies"] = cookies
     if headers:
         payload["headers"] = headers
+    if original_url:
+        payload["original_url"] = original_url
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
     return f"{base_url}stream?token={token}"
 
@@ -145,7 +149,8 @@ async def get_info(body: InfoRequest, request: Request):
         result["best_video_download_url"] = _make_stream_url(
             best_video_dict["url"], base, ext="mp4",
             cookies=best_video_dict.get("cookies"),
-            headers=best_video_dict.get("http_headers")
+            headers=best_video_dict.get("http_headers"),
+            original_url=body.url
         )
 
     url_lower = body.url.lower()
@@ -164,14 +169,16 @@ async def get_info(body: InfoRequest, request: Request):
             result["audio_download_url"] = _make_stream_url(
                 best_audio_dict["url"], base, ext="m4a",
                 cookies=best_audio_dict.get("cookies"),
-                headers=best_audio_dict.get("http_headers")
+                headers=best_audio_dict.get("http_headers"),
+                original_url=body.url
             )
         elif best_video_dict and best_video_dict.get("url") and engine.check_ffmpeg():
             # No separate audio stream — extract audio from the combined video stream
             result["audio_download_url"] = _make_stream_url(
                 best_video_dict["url"], base, ext="mp3", audio_only=True,
                 cookies=best_video_dict.get("cookies"),
-                headers=best_video_dict.get("http_headers")
+                headers=best_video_dict.get("http_headers"),
+                original_url=body.url
             )
 
     # Wrap per-format URLs — never expose raw YT URL
@@ -234,6 +241,20 @@ async def stream_video(token: str = Query(...)):
     ext = payload.get("ext", "mp4").lower()
     audio_only = payload.get("audio_only", False)
     req_cookies = payload.get("cookies")
+    original_url = payload.get("original_url")
+    if req_cookies:
+        valid_pairs = []
+        for part in req_cookies.split(';'):
+            part = part.strip()
+            if not part: continue
+            if '=' in part:
+                k, v = part.split('=', 1)
+                if k.lower() not in ('domain', 'path', 'expires', 'max-age', 'samesite'):
+                    valid_pairs.append(f"{k}={v}")
+            else:
+                if part.lower() not in ('secure', 'httponly'):
+                    valid_pairs.append(part)
+        req_cookies = '; '.join(valid_pairs)
     req_headers = payload.get("headers") or {}
     is_m3u8 = ".m3u8" in yt_url.lower()
 
@@ -246,7 +267,7 @@ async def stream_video(token: str = Query(...)):
 
     # ── 5. Stream via ffmpeg (audio extraction or M3U8 video) ───────────
     if (audio_only or is_m3u8) and engine.check_ffmpeg():
-        async def _ffmpeg_streamer():
+        def _ffmpeg_streamer():
             cmd = ["ffmpeg"]
             if ffmpeg_headers:
                 cmd.extend(["-headers", ffmpeg_headers])
@@ -299,6 +320,38 @@ async def stream_video(token: str = Query(...)):
     media_type = f"audio/{ext}" if ext in AUDIO_EXTS else f"video/{ext}"
     filename   = f"download.{ext}"
 
+    # ── 6. Native yt-dlp downloader proxy (for TikTok / WAF protected sites) ──
+    # If the original_url is TikTok, Akamai WAF blocks direct chunk proxying from curl_cffi.
+    # Therefore, we run yt-dlp as a subprocess to stream the file directly to stdout!
+    is_tiktok = "tiktok.com" in original_url.lower() if original_url else False
+    if is_tiktok and original_url:
+        def _ytdlp_streamer():
+            cmd = ["yt-dlp", "--quiet", "--no-warnings", "-o", "-", original_url]
+            if os.path.exists("cookies.txt"):
+                cmd.extend(["--cookies", "cookies.txt"])
+
+            proc = subprocess.Popen(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
+            )
+            
+            try:
+                while True:
+                    chunk = proc.stdout.read(262_144)  # 256KB chunks
+                    if not chunk: break
+                    yield chunk
+            finally:
+                proc.stdout.close()
+                proc.wait()
+
+        return StreamingResponse(
+            _ytdlp_streamer(),
+            media_type=media_type,
+            headers={
+                "Content-Disposition": f'attachment; filename="{filename}"',
+                "Cache-Control": "no-store",
+            },
+        )
+
     async def _streamer():
         # Detect platform from the CDN/stream URL and set the correct Referer/Origin.
         # yt-dlp usually provides these via req_headers, but if missing we fall back
@@ -346,9 +399,9 @@ async def stream_video(token: str = Query(...)):
 
         headers = {
             "User-Agent": (
-                "Mozilla/5.0 (Linux; Android 13; SM-S918B) "
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/120.0.0.0 Mobile Safari/537.36"
+                "Chrome/120.0.0.0 Safari/537.36"
             ),
             "Referer": _referer,
             "Origin":  _origin,
@@ -358,12 +411,9 @@ async def stream_video(token: str = Query(...)):
         if req_cookies:
             headers["Cookie"] = req_cookies
 
-        async with httpx.AsyncClient(
-            timeout=httpx.Timeout(connect=10, read=300, write=None, pool=None),
-            follow_redirects=True,
-        ) as client:
+        async with AsyncSession(impersonate="chrome110") as client:
             async with client.stream("GET", yt_url, headers=headers) as resp:
-                async for chunk in resp.aiter_bytes(chunk_size=262_144):  # 256 KB
+                async for chunk in resp.aiter_content(chunk_size=262_144):  # 256 KB
                     yield chunk
 
     return StreamingResponse(

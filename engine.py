@@ -153,7 +153,7 @@ def check_ffmpeg() -> bool:
 def get_info(url: str) -> dict:
     """Fetch metadata for a single video, search query, or a playlist."""
     is_search = url.startswith('ytsearch')
-
+    
     opts = {
         **_COMMON_OPTS,
         'logger': _SilentLogger(),
@@ -168,20 +168,6 @@ def get_info(url: str) -> dict:
                 'base_url': os.environ.get('BGU_BASE_URL', 'http://localhost:4416')
             },
         },
-
-        'http_headers': {
-            'User-Agent': (
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                'AppleWebKit/537.36 (KHTML, like Gecko) '
-                'Chrome/120.0.0.0 Safari/537.36'
-            ),
-            # NOTE: Referer is intentionally omitted here.
-            # yt-dlp sets the correct platform-specific Referer per extractor internally.
-            # A hardcoded global Referer (e.g. google.com) can break TikTok, Pornhub,
-            # Twitter, etc. extractors that expect their own domain as Referer.
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.9',
-        }
     }
     
     # ── Handle Cookies to Bypass Bot Detection ──

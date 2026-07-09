@@ -1,0 +1,127 @@
+================================================================================
+  Syntiox DL-API — /info Response — test1.txt (Metadata)
+  Generated : 2026-07-09 15:49:23
+  URL       : https://www.youtube.com/watch?v=dQw4w9WgXcQ
+================================================================================
+
+[ මූලික තොරතුරු ]------------------------------------------------------------
+  Title                  Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)
+  Platform               youtube
+  Type                   video
+  Duration               3:33 (213s)
+  Uploader               Rick Astley
+  Uploader ID            @RickAstleyYT
+  Channel                Rick Astley
+  Channel ID             UCuAXFkgsw1L7xaCfnd5JJOw
+  Channel URL            https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw
+  Webpage URL            https://www.youtube.com/watch?v=dQw4w9WgXcQ
+  Language               (නැත)
+  Age Limit              0+
+  Is Live                නැත
+  Was Live               නැත
+  Thumbnail              https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg
+
+[ ස්ටැට්ස් ]------------------------------------------------------------
+  Views                  1,790,867,787 views
+  Likes                  19,237,640 likes
+  Dislikes               (නැත)
+  Comments               2,400,000 comments
+  Average Rating         (නැත)
+  Upload Date            2009 Oct 25
+  Timestamp              2009-10-25 06:57 UTC
+
+[ Tags & Categories ]------------------------------------------------------------
+  Categories             Music
+  Tags (27 total):
+    rick astley, Never Gonna Give You Up, nggyu, never gonna give you up lyrics, rick rolled
+    Rick Roll, rick astley official, rickrolled, Fortnite song, Fortnite event
+    Fortnite dance, fortnite never gonna give you up, rick roll, rickrolling, rick rolling
+    never gonna give you up, 80s music, rick astley new, animated video, rickroll
+    meme songs, never gonna give u up lyrics, Rick Astley 2022, never gonna let you down, animated
+    rick rolls 2022, never gonna give you up karaoke
+
+[ Description ]------------------------------------------------------------
+  The official video for “Never Gonna Give You Up” by Rick Astley. 
+  
+  Never: The Autobiography 📚 OUT NOW! 
+  Follow this link to get your copy and listen to Rick’s ‘Never’ playlist ❤️ #RickAstleyNever
+  https://linktr.ee/rickastleynever
+  
+  “Never Gonna Give You Up” was a global smash on its release in July 1987, topping the charts in 25 countries including Rick’s native UK and the US Billboard Hot 100.  It also won the Brit Award for Best single in 1988. Stock Aitken and Waterman wrote and produced the track which was the lead-off single and lead track from Rick’s debut LP “Whenever You Need Somebody”.  The album was itself a UK number one and would go on to sell over 15 million copies worldwide.
+  
+  The legendary video was directed by Simon West – who later went on to make Hollywood blockbusters such as Con Air, Lara Croft – Tomb Raider and The Expendables 2.  The video passed the 1bn YouTube views milestone on 28 July 2021.
+  
+  Subscribe to the official Rick Astley YouTube channel: https://RickAstley.lnk.to/YTSubID
+  
+  Follow Rick Astley:
+  Facebook: https://RickAstley.lnk.to/FBFollowID 
+  Twitter: https://RickAstley.lnk.to/TwitterID 
+  Instagram: https://RickAstley.lnk.to/InstagramID 
+  Website: https://RickAstley.lnk.to/storeID 
+  TikTok: https://RickAstley.lnk.to/TikTokID
+  
+  Listen to Rick Astley:
+  Spotify: https://RickAstley.lnk.to/SpotifyID 
+  Apple Music: https://RickAstley.lnk.to/AppleMusicID 
+  Amazon Music: https://RickAstley.lnk.to/AmazonMusicID 
+  Deezer: https://RickAstley.lnk.to/DeezerID 
+  
+  Lyrics:
+  We’re no strangers to love
+  You know the rules and so do I
+  A full commitment’s what I’m thinking of
+  You wouldn’t get this from any other guy
+  
+  I just wanna tell you how I’m feeling
+  Gotta make you understand
+  
+  Never gonna give you up
+  Never gonna let you down
+  Never gonna run around and desert you
+  Never gonna make you cry
+  Never gonna say goodbye
+  Never gonna tell a lie and hurt you
+  
+  We’ve known each other for so long
+  Your heart’s been aching but you’re too shy to say it
+  Inside we both know what’s been going on
+  We know the game and we’re gonna play it
+  
+  And if you ask me how I’m feeling
+  Don’t tell me you’re too blind to see
+  
+  Never gonna give you up
+  Never gonna let you down
+  Never gonna run around and desert you
+  Never gonna make you cry
+  Never gonna say goodbye
+  Never gonna tell a lie and hurt you
+  
+  #RickAstley #NeverGonnaGiveYouUp #WheneverYouNeedSomebody #OfficialMusicVideo
+
+[ Best Video Stream ]------------------------------------------------------------
+  Resolution             1920x1080 @ 25.0fps
+  Video Codec            avc1.640028
+  Audio Codec            mp4a.40.2
+  Extension              mp4
+  File Size              (නැත)
+
+  Stream URL (JWT):
+  http://localhost:8000/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJodHRwczovL21hbmlmZXN0Lmdvb2dsZXZpZGVvLmNvbS9hcGkvbWFuaWZlc3QvaGxzX3BsYXlsaXN0L2V4cGlyZS8xNzgzNjEzOTYwL2VpL3AzVlBhc3ZRTjlLdGp1TVB4NF94NkFjL2lwLzE3NS4xNTcuMTQuMTY0L2lkLzc1MGMzOGMzZDVhMDVkYzQvaXRhZy85Ni9zb3VyY2UveW91dHViZS9yZXF1aXJlc3NsL3llcy9yYXRlYnlwYXNzL3llcy9wZmEvMS9zZ29hcC9jbGVuJTNEMzQ0OTQ0NyUzQmR1ciUzRDIxMy4wODklM0JnaXIlM0R5ZXMlM0JpdGFnJTNEMTQwJTNCbG10JTNEMTc2Njk1NTkyNTU3MjIwNy9zZ292cC9jbGVuJTNEODA5MTE5OTklM0JkdXIlM0QyMTMuMDQwJTNCZ2lyJTNEeWVzJTNCaXRhZyUzRDEzNyUzQmxtdCUzRDE3NjY5NTc5MjYxNzQyNTAvcnFoLzEvaGxzX2NodW5rX2hvc3QvcnIyLS0tc24tcXA1YXZiNW1wNXU1LWpoY2suZ29vZ2xldmlkZW8uY29tL3hwYy9FZ1ZvMmFEU05RJTNEJTNEL2Nwcy84NzcvbWV0LzE3ODM1OTIzNTksL21oLzdjL21tLzMxLDI5L21uL3NuLXFwNWF2YjVtcDV1NS1qaGNrLHNuLWN2aDdrbnprL21zL2F1LHJkdS9tdi9tL212aS8yL3BsLzIyL3Jtcy9hdSxhdS9pbml0Y3duZGJwcy8xODEyNTAvYnVpL0FaRmxxaE5zVTNsSGcyR05FcDVTeEdGdjNhamR2N2poNF9POTZRd0xueURCQVdiN2R4WU9qMk81dlVsVy1DOEhUTTBCNXpuS3I3dXpoWmt4L3NwYy9TUS11bWxxS3M3aEFrS09VWm5xelFKMVFDZnlUN1NUMEtLVDNkWDFLaFJIemRlTUVuSnlSS1hacFdGclVMNllvMjh3azUxVjhpSlA0TUEvdnBydi8xL25zL0ZLTFJzeWRXenNwbUVja3dNLVBTdTM0Vy9wbGF5bGlzdF90eXBlL0NMRUFOL2RvdmVyLzExL3R4cC81NTMyNTM0L210LzE3ODM1OTIwMjEvZnZpcC81L2tlZXBhbGl2ZS95ZXMvZmV4cC81MTU2NTExNSw1MTk0NjgzNyw1MjAxNjU1MSw1MjAxNzE0Ny9uL0o5UkN1NE9MV1VBSDF3L3NwYXJhbXMvZXhwaXJlLGVpLGlwLGlkLGl0YWcsc291cmNlLHJlcXVpcmVzc2wscmF0ZWJ5cGFzcyxwZmEsc2dvYXAsc2dvdnAscnFoLHhwYyxidWksc3BjLHZwcnYsbnMscGxheWxpc3RfdHlwZS9zaWcvQUhFcU5NNHdSZ0loQU9aMHVnZ04wMWpJYVNpbzBndU9ocnZUZEVLQ0l3UFhUelJxWGhub3lYZkNBaUVBc2RtRTJ3Z1J0Si1qVlh1RW1ZdXpvcTMycEQ2ZXhtem03YXJ6T1dGaFNpRSUzRC9sc3BhcmFtcy9obHNfY2h1bmtfaG9zdCxjcHMsbWV0LG1oLG1tLG1uLG1zLG12LG12aSxwbCxybXMsaW5pdGN3bmRicHMvbHNpZy9BUGFUeHhNd1JRSWhBTVhTV2JVQzgwZ00yajU3Tk5tcEVmeExVdTYtU0VzMWZEa244YmlHTFZHeEFpQVRWeW5hWWROOVVsZnljak1GLTlvUTYzVUM0M3kxZnJSUVRqWmY4QU5scXclM0QlM0QvcGxheWxpc3QvaW5kZXgubTN1OCIsImV4dCI6Im1wNCIsImV4cCI6MTc4MzU5MzU2My4xNDEyNzUsImp0aSI6IjliNWI5MTRmMTQyY2VhYWQ5ZThhIiwiaGVhZGVycyI6eyJVc2VyLUFnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzE0NS4wLjAuMCBTYWZhcmkvNTM3LjM2IiwiQWNjZXB0IjoidGV4dC9odG1sLGFwcGxpY2F0aW9uL3hodG1sK3htbCxhcHBsaWNhdGlvbi94bWw7cT0wLjksKi8qO3E9MC44IiwiQWNjZXB0LUxhbmd1YWdlIjoiZW4tdXMsZW47cT0wLjUiLCJTZWMtRmV0Y2gtTW9kZSI6Im5hdmlnYXRlIn0sIm9yaWdpbmFsX3VybCI6Imh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9ZFF3NHc5V2dYY1EifQ.F6he9wnMO9D6j5W6VrxjJDiC_gfdeyv-Q6ViryZnWYw
+
+  Direct URL (Raw CDN):
+  https://manifest.googlevideo.com/api/manifest/hls_playlist/expire/1783613960/ei/p3VPasvQN9KtjuMPx4_x6Ac/ip/175.157.14.164/id/750c38c3d5a05dc4/itag/96/source/youtube/requiressl/yes/ratebypass/yes/pfa/1/sgoap/clen%3D3449447%3Bdur%3D213.089%3Bgir%3Dyes%3Bitag%3D140%3Blmt%3D1766955925572207/sgovp/clen%3D80911999%3Bdur%3D213.040%3Bgir%3Dyes%3Bitag%3D137%3Blmt%3D1766957926174250/rqh/1/hls_chunk_host/rr2---sn-qp5avb5mp5u5-jhck.googlevideo.com/xpc/EgVo2aDSNQ%3D%3D/cps/877/met/1783592359,/mh/7c/mm/31,29/mn/sn-qp5avb5mp5u5-jhck,sn-cvh7knzk/ms/au,rdu/mv/m/mvi/2/pl/22/rms/au,au/initcwndbps/181250/bui/AZFlqhNsU3lHg2GNEp5SxGFv3ajdv7jh4_O96QwLnyDBAWb7dxYOj2O5vUlW-C8HTM0B5znKr7uzhZkx/spc/SQ-umlqKs7hAkKOUZnqzQJ1QCfyT7ST0KKT3dX1KhRHzdeMEnJyRKXZpWFrUL6Yo28wk51V8iJP4MA/vprv/1/ns/FKLRsydWzspmEckwM-PSu34W/playlist_type/CLEAN/dover/11/txp/5532534/mt/1783592021/fvip/5/keepalive/yes/fexp/51565115,51946837,52016551,52017147/n/J9RCu4OLWUAH1w/sparams/expire,ei,ip,id,itag,source,requiressl,ratebypass,pfa,sgoap,sgovp,rqh,xpc,bui,spc,vprv,ns,playlist_type/sig/AHEqNM4wRgIhAOZ0uggN01jIaSio0guOhrvTdEKCIwPXTzRqXhnoyXfCAiEAsdmE2wgRtJ-jVXuEmYuzoq32pD6exmzm7arzOWFhSiE%3D/lsparams/hls_chunk_host,cps,met,mh,mm,mn,ms,mv,mvi,pl,rms,initcwndbps/lsig/APaTxxMwRQIhAMXSWbUC80gM2j57NNmpEfxLUu6-SEs1fDkn8biGLVGxAiATVynaYdN9UlfycjMF-9oQ63UC43y1frRQTjZf8ANlqw%3D%3D/playlist/index.m3u8
+
+[ Best Audio Stream ]------------------------------------------------------------
+  Bitrate                129.502 kbps
+  Audio Codec            mp4a.40.2
+  Extension              m4a
+  File Size              3.3 MB
+
+  Stream URL (JWT):
+  http://localhost:8000/stream?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJodHRwczovL3JyMi0tLXNuLXFwNWF2YjVtcDV1NS1qaGNrLmdvb2dsZXZpZGVvLmNvbS92aWRlb3BsYXliYWNrP2V4cGlyZT0xNzgzNjEzOTYxJmVpPXFYVlBhcFNCRFktdzQtRVByc19SMlEwJmlwPTE3NS4xNTcuMTQuMTY0JmlkPW8tQUJqUVdpY3dlYWFmcUtJVVRNLUlTZGNiZ2Z2RlRIZkZ2WGNURjF2MUtRRjAmaXRhZz0xNDAmc291cmNlPXlvdXR1YmUmcmVxdWlyZXNzbD15ZXMmeHBjPUVnVm8yYURTTlElM0QlM0QmY3BzPTg3MSZtZXQ9MTc4MzU5MjM2MSUyQyZtaD03YyZtbT0zMSUyQzI5Jm1uPXNuLXFwNWF2YjVtcDV1NS1qaGNrJTJDc24tY3ZoN2tuemsmbXM9YXUlMkNyZHUmbXY9bSZtdmk9MiZwbD0yMiZybXM9YXUlMkNhdSZpbml0Y3duZGJwcz0xODEyNTAmYnVpPUFaRmxxaE9QWlItUS16MDFNSmtQY0ViX1FWX1hhZ3A2alFnanNwVnRqRHVfUHNuT3lUWXh0aTNyTjludFVUNnVwNE1ZbmtrZVRfMVlKaEx0JnNwYz1TUS11bW9Jb2QzOWd3Q1hwREZtc3lndFlKUUJPSDlvXyZ2cHJ2PTEmc3ZwdWM9MSZtaW1lPWF1ZGlvJTJGbXA0Jm5zPVRzUXNjTngtOVhSZGZyZkp4X2U4LTFrVyZycWg9MSZnaXI9eWVzJmNsZW49MzQ0OTQ0NyZkdXI9MjEzLjA4OSZsbXQ9MTc2Njk1NTkyNTU3MjIwNyZtdD0xNzgzNTkyMDIxJmZ2aXA9NSZrZWVwYWxpdmU9eWVzJmxtdz0xJmZleHA9NTE1NjUxMTUlMkM1MTk0NjgzNyUyQzUyMDE3MTQ3JmM9VFZIVE1MNSZzZWZjPTEmdHhwPTU1MzI1MzQmbj1yYTFRWnpFdGI1Wk9xdyZzcGFyYW1zPWV4cGlyZSUyQ2VpJTJDaXAlMkNpZCUyQ2l0YWclMkNzb3VyY2UlMkNyZXF1aXJlc3NsJTJDeHBjJTJDYnVpJTJDc3BjJTJDdnBydiUyQ3N2cHVjJTJDbWltZSUyQ25zJTJDcnFoJTJDZ2lyJTJDY2xlbiUyQ2R1ciUyQ2xtdCZsc3BhcmFtcz1jcHMlMkNtZXQlMkNtaCUyQ21tJTJDbW4lMkNtcyUyQ212JTJDbXZpJTJDcGwlMkNybXMlMkNpbml0Y3duZGJwcyZsc2lnPUFQYVR4eE13UmdJaEFPakhlem91LXNqQm5tekxRTzBDakZXZlNXMDNvalp0bGowaFgtSE1VUTNpQWlFQXFLaHFNbHFhWGR4VzVsT0ZtUUJwY3ZKYUJNU2RyZ05TaUFadmNrUlc2aDAlM0Qmc2lnPUFIRXFOTTR3UmdJaEFOMGE3SkdBQjZaSjZpNUNXcmxFbXZNZW9ETGJfd2xQS2Y1WjBEeF9PZVdpQWlFQWp2dWFoSGtYenZPaTkwYUx3dkxJZTd1bVNRRW02bXJTS2J2NWlYaVZIMzQlM0QiLCJleHQiOiJtNGEiLCJleHAiOjE3ODM1OTM1NjMuMTQ2NjQwMywianRpIjoiMWIzMjkzYjRlNmIwY2VhNTg4NTEiLCJoZWFkZXJzIjp7IlVzZXItQWdlbnQiOiJNb3ppbGxhLzUuMCAoV2luZG93cyBOVCAxMC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTQ1LjAuMC4wIFNhZmFyaS81MzcuMzYiLCJBY2NlcHQiOiJ0ZXh0L2h0bWwsYXBwbGljYXRpb24veGh0bWwreG1sLGFwcGxpY2F0aW9uL3htbDtxPTAuOSwqLyo7cT0wLjgiLCJBY2NlcHQtTGFuZ3VhZ2UiOiJlbi11cyxlbjtxPTAuNSIsIlNlYy1GZXRjaC1Nb2RlIjoibmF2aWdhdGUifSwib3JpZ2luYWxfdXJsIjoiaHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1kUXc0dzlXZ1hjUSJ9.6vL3x2wQNtnQ4J96fFr2G0tZr0dd3WqWuJvoe3DBGts
+
+  Direct URL (Raw CDN):
+  https://rr2---sn-qp5avb5mp5u5-jhck.googlevideo.com/videoplayback?expire=1783613961&ei=qXVPapSBDY-w4-EPrs_R2Q0&ip=175.157.14.164&id=o-ABjQWicweaafqKIUTM-ISdcbgfvFTHfFvXcTF1v1KQF0&itag=140&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&cps=871&met=1783592361%2C&mh=7c&mm=31%2C29&mn=sn-qp5avb5mp5u5-jhck%2Csn-cvh7knzk&ms=au%2Crdu&mv=m&mvi=2&pl=22&rms=au%2Cau&initcwndbps=181250&bui=AZFlqhOPZR-Q-z01MJkPcEb_QV_Xagp6jQgjspVtjDu_PsnOyTYxti3rN9ntUT6up4MYnkkeT_1YJhLt&spc=SQ-umoIod39gwCXpDFmsygtYJQBOH9o_&vprv=1&svpuc=1&mime=audio%2Fmp4&ns=TsQscNx-9XRdfrfJx_e8-1kW&rqh=1&gir=yes&clen=3449447&dur=213.089&lmt=1766955925572207&mt=1783592021&fvip=5&keepalive=yes&lmw=1&fexp=51565115%2C51946837%2C52017147&c=TVHTML5&sefc=1&txp=5532534&n=ra1QZzEtb5ZOqw&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cbui%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Cns%2Crqh%2Cgir%2Cclen%2Cdur%2Clmt&lsparams=cps%2Cmet%2Cmh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Crms%2Cinitcwndbps&lsig=APaTxxMwRgIhAOjHezou-sjBnmzLQO0CjFWfSW03ojZtlj0hX-HMUQ3iAiEAqKhqMlqaXdxW5lOFmQBpcvJaBMSdrgNSiAZvckRW6h0%3D&sig=AHEqNM4wRgIhAN0a7JGAB6ZJ6i5CWrlEmvMeoDLb_wlPKf5Z0Dx_OeWiAiEAjvuahHkXzvOi90aLwvLIe7umSQEm6mrSKbv5iXiVH34%3D
+
+================================================================================

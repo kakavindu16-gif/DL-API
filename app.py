@@ -11,6 +11,7 @@ import httpx
 from curl_cffi.requests import AsyncSession
 from cachetools import TTLCache
 from fastapi import FastAPI, HTTPException, Request, Query
+from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 from jose import jwt, JWTError
@@ -123,7 +124,7 @@ async def get_info(body: InfoRequest, request: Request):
     Requires X-API-KEY header. Raw YouTube URLs are never exposed to the caller.
     Each URL in the response is a signed JWT proxy link valid for 20 minutes.
     """
-    result = engine.get_info(body.url)
+    result = await run_in_threadpool(engine.get_info, body.url)
     if result.get("type") == "error":
         return JSONResponse(
             status_code=400,
@@ -152,6 +153,18 @@ async def get_info(body: InfoRequest, request: Request):
             headers=best_video_dict.get("http_headers"),
             original_url=body.url
         )
+        # Expose raw CDN URL directly (trusted callers only — endpoint is API-key protected)
+        result["best_video_direct_url"] = best_video_dict.get("direct_url")
+        # Expose quality/codec metadata for the best combined stream
+        result["best_video_meta"] = {
+            "ext":      best_video_dict.get("ext"),
+            "height":   best_video_dict.get("height"),
+            "width":    best_video_dict.get("width"),
+            "fps":      best_video_dict.get("fps"),
+            "vcodec":   best_video_dict.get("vcodec"),
+            "acodec":   best_video_dict.get("acodec"),
+            "filesize": best_video_dict.get("filesize"),
+        }
 
     url_lower = body.url.lower()
     audio_friendly_domains = [
@@ -172,6 +185,14 @@ async def get_info(body: InfoRequest, request: Request):
                 headers=best_audio_dict.get("http_headers"),
                 original_url=body.url
             )
+            # Expose raw CDN URL directly
+            result["audio_direct_url"] = best_audio_dict.get("direct_url")
+            result["audio_meta"] = {
+                "ext":      best_audio_dict.get("ext"),
+                "abr":      best_audio_dict.get("abr"),
+                "acodec":   best_audio_dict.get("acodec"),
+                "filesize": best_audio_dict.get("filesize"),
+            }
         elif best_video_dict and best_video_dict.get("url") and engine.check_ffmpeg():
             # No separate audio stream — extract audio from the combined video stream
             result["audio_download_url"] = _make_stream_url(
@@ -181,7 +202,8 @@ async def get_info(body: InfoRequest, request: Request):
                 original_url=body.url
             )
 
-    # Wrap per-format URLs — never expose raw YT URL
+    # Wrap per-format URLs — never expose raw YT URL via stream token;
+    # direct_url IS exposed since /info is API-key protected
     if "formats" in result:
         for fmt in result["formats"]:
             raw_url = fmt.get("url", "")
@@ -190,7 +212,8 @@ async def get_info(body: InfoRequest, request: Request):
                 cookies = fmt.pop("cookies", None)
                 headers = fmt.pop("http_headers", None)
                 fmt["download_url"] = _make_stream_url(raw_url, base, ext=ext, cookies=cookies, headers=headers)
-            # Always remove the raw YT URL from the response
+                fmt["direct_url"]   = raw_url   # raw CDN URL for trusted callers
+            # Always remove the raw internal URL key
             fmt.pop("url", None)
 
     final_result = {

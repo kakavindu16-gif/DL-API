@@ -17,6 +17,12 @@ _COMMON_OPTS = {
     'format': 'all',
     'js_runtimes': {'node': {}},
     'impersonate': yt_dlp.networking.impersonate.ImpersonateTarget(client='chrome'),
+    # ── Network stability ────────────────────────────────────────────────────
+    'socket_timeout': 20,      # idle socket timeout (seconds) — won't cut long downloads
+    'retries': 5,              # retry on transient network errors
+    'fragment_retries': 5,     # retry on fragment errors (HLS/DASH)
+    # ── Playlist safety cap ──────────────────────────────────────────────────
+    'playlistend': 100,        # max 100 entries per playlist fetch
 }
 
 import urllib.request
@@ -121,10 +127,19 @@ def _get_best_video_with_audio(info: dict) -> dict:
             if not best_video or (f.get('height') or 0) > (best_video.get('height') or 0):
                 best_video = f
     if best_video:
+        raw = best_video.get('url') or best_video.get('manifest_url', '')
         return {
-            'url': best_video.get('url') or best_video.get('manifest_url', ''),
-            'cookies': best_video.get('cookies') or info.get('cookies'),
-            'http_headers': best_video.get('http_headers') or info.get('http_headers')
+            'url':          raw,
+            'direct_url':   raw,   # raw CDN URL — expose to trusted callers
+            'cookies':      best_video.get('cookies') or info.get('cookies'),
+            'http_headers': best_video.get('http_headers') or info.get('http_headers'),
+            'ext':          best_video.get('ext'),
+            'height':       best_video.get('height'),
+            'width':        best_video.get('width'),
+            'fps':          best_video.get('fps'),
+            'vcodec':       best_video.get('vcodec'),
+            'acodec':       best_video.get('acodec'),
+            'filesize':     best_video.get('filesize') or best_video.get('filesize_approx'),
         }
     return {}
 
@@ -138,10 +153,16 @@ def _get_best_audio(info: dict) -> dict:
             if not best_audio or (f.get('abr') or 0) > (best_audio.get('abr') or 0):
                 best_audio = f
     if best_audio:
+        raw = best_audio.get('url') or best_audio.get('manifest_url', '')
         return {
-            'url': best_audio.get('url') or best_audio.get('manifest_url', ''),
-            'cookies': best_audio.get('cookies') or info.get('cookies'),
-            'http_headers': best_audio.get('http_headers') or info.get('http_headers')
+            'url':          raw,
+            'direct_url':   raw,   # raw CDN URL — expose to trusted callers
+            'cookies':      best_audio.get('cookies') or info.get('cookies'),
+            'http_headers': best_audio.get('http_headers') or info.get('http_headers'),
+            'ext':          best_audio.get('ext'),
+            'abr':          best_audio.get('abr'),
+            'acodec':       best_audio.get('acodec'),
+            'filesize':     best_audio.get('filesize') or best_audio.get('filesize_approx'),
         }
     return {}
 
@@ -212,14 +233,35 @@ def get_info(url: str) -> dict:
                 if is_search and len(entries) > 0:
                     video_info = entries[0]
                     return {
-                        'type':     'video',
-                        'title':    video_info.get('title'),
-                        'thumb':    video_info.get('thumbnail'),
-                        'duration': video_info.get('duration'),
-                        'uploader': video_info.get('uploader'),
-                        'best_video': _get_best_video_with_audio(video_info),
-                        'best_audio': _get_best_audio(video_info),
-                        'formats':  _extract_formats(video_info),
+                        'type':            'video',
+                        'title':           video_info.get('title'),
+                        'thumb':           video_info.get('thumbnail'),
+                        'duration':        video_info.get('duration'),
+                        'duration_string': video_info.get('duration_string'),
+                        'uploader':        video_info.get('uploader'),
+                        'uploader_id':     video_info.get('uploader_id'),
+                        'channel':         video_info.get('channel'),
+                        'channel_id':      video_info.get('channel_id'),
+                        'channel_url':     video_info.get('channel_url'),
+                        'webpage_url':     video_info.get('webpage_url'),
+                        'extractor':       video_info.get('extractor'),
+                        'upload_date':     video_info.get('upload_date'),
+                        'timestamp':       video_info.get('timestamp'),
+                        'view_count':      video_info.get('view_count'),
+                        'like_count':      video_info.get('like_count'),
+                        'dislike_count':   video_info.get('dislike_count'),
+                        'comment_count':   video_info.get('comment_count'),
+                        'average_rating':  video_info.get('average_rating'),
+                        'age_limit':       video_info.get('age_limit'),
+                        'tags':            video_info.get('tags'),
+                        'categories':      video_info.get('categories'),
+                        'description':     video_info.get('description'),
+                        'language':        video_info.get('language'),
+                        'is_live':         video_info.get('is_live'),
+                        'was_live':        video_info.get('was_live'),
+                        'best_video':      _get_best_video_with_audio(video_info),
+                        'best_audio':      _get_best_audio(video_info),
+                        'formats':         _extract_formats(video_info),
                     }
                 else:
                     videos = [
@@ -234,14 +276,35 @@ def get_info(url: str) -> dict:
                     }
             else:
                 return {
-                    'type':     'video',
-                    'title':    info.get('title'),
-                    'thumb':    info.get('thumbnail'),
-                    'duration': info.get('duration'),
-                    'uploader': info.get('uploader'),
-                    'best_video': _get_best_video_with_audio(info),
-                    'best_audio': _get_best_audio(info),
-                    'formats':  _extract_formats(info),
+                    'type':            'video',
+                    'title':           info.get('title'),
+                    'thumb':           info.get('thumbnail'),
+                    'duration':        info.get('duration'),
+                    'duration_string': info.get('duration_string'),
+                    'uploader':        info.get('uploader'),
+                    'uploader_id':     info.get('uploader_id'),
+                    'channel':         info.get('channel'),
+                    'channel_id':      info.get('channel_id'),
+                    'channel_url':     info.get('channel_url'),
+                    'webpage_url':     info.get('webpage_url'),
+                    'extractor':       info.get('extractor'),
+                    'upload_date':     info.get('upload_date'),
+                    'timestamp':       info.get('timestamp'),
+                    'view_count':      info.get('view_count'),
+                    'like_count':      info.get('like_count'),
+                    'dislike_count':   info.get('dislike_count'),
+                    'comment_count':   info.get('comment_count'),
+                    'average_rating':  info.get('average_rating'),
+                    'age_limit':       info.get('age_limit'),
+                    'tags':            info.get('tags'),
+                    'categories':      info.get('categories'),
+                    'description':     info.get('description'),
+                    'language':        info.get('language'),
+                    'is_live':         info.get('is_live'),
+                    'was_live':        info.get('was_live'),
+                    'best_video':      _get_best_video_with_audio(info),
+                    'best_audio':      _get_best_audio(info),
+                    'formats':         _extract_formats(info),
                 }
     except Exception as exc:
         return {'type': 'error', 'message': str(exc)}

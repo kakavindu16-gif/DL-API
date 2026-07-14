@@ -25,6 +25,25 @@ _COMMON_OPTS = {
     'playlistend': 100,        # max 100 entries per playlist fetch
 }
 
+def _get_proxy_opts() -> dict:
+    """
+    Returns proxy opts for yt-dlp if PROXY_URL env var is set.
+    Supports: http://, https://, socks5://, socks5h:// schemes.
+    
+    Example env vars:
+      PROXY_URL=http://user:pass@residential-proxy.example.com:8080
+      PROXY_URL=socks5://user:pass@proxy.example.com:1080
+    """
+    proxy = os.environ.get('PROXY_URL', '').strip()
+    if proxy:
+        print(f"[ENGINE PROXY] Using proxy: {proxy.split('@')[-1]}")
+        return {
+            'proxy': proxy,
+            # When using proxy, don't bind to a specific source address
+            'source_address': None,
+        }
+    return {}
+
 import urllib.request
 import json
 
@@ -263,6 +282,11 @@ def get_info(url: str) -> dict:
             'logger': _SilentLogger(),
             'extractor_args': extractor_args,
         }
+
+        # ── Proxy support (bypasses datacenter IP block) ──────────────────────
+        proxy_opts = _get_proxy_opts()
+        if proxy_opts:
+            o.update(proxy_opts)
 
         # ── Cookies ──────────────────────────────────────────────────────────
         c_path = None
